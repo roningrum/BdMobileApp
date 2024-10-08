@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-//         SONAR_SCANNER_HOME = tool name: 'SonarQubeScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -27,8 +23,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-//                     sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner"
-                    sh 'sonar-scanner'
+                    sh 'sonar-scanner'  // Run SonarQube analysis
                 }
             }
         }
