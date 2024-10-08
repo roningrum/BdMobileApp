@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        ANDROID_HOME = 'C:\Users\oktav\AppData\Local\Android\Sdk' // Pastikan ini sesuai dengan path di Jenkins
+        PATH = "${env.ANDROID_HOME}/tools:${env.ANDROID_HOME}/platform-tools:${env.PATH}"
+    }
+
     stages {
         stage('Checkout') {
             steps {
