@@ -1,39 +1,41 @@
 pipeline {
     agent any
 
+    environment {
+        ANDROID_HOME = 'C:/Users/oktav/AppData/Local/Android/Sdk'  // Ganti dengan path SDK Android yang benar
+    }
+
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/roningrum/BdMobileApp.git', credentialsId: 'github-token'
+                git branch: 'main', url: 'https://github.com/roningrum/BdMobileApp.git', credentialsId: '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'
             }
         }
 
         stage('Build') {
             steps {
-                // Berikan izin eksekusi pada file gradlew
                 sh 'chmod +x ./gradlew'
-                // Jalankan proses build
-                sh './gradlew assembleDebug'  // Build APK
+                sh './gradlew assembleDebug'
             }
         }
 
         stage('Test') {
             steps {
-                sh './gradlew test'  // Run unit tests
+                sh './gradlew test'
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh 'sonar-scanner'  // Run SonarQube analysis
+                    sh 'sonar-scanner'
                 }
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying APK...'  // Jika ada deployment step
+                echo 'Deploying APK...'
             }
         }
     }
