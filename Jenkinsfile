@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/roningrum/BdMobileApp.git', credentialsId: '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'
+                git branch: 'main', url: 'https://github.com/roningrum/BdMobileApp.git', credentialsId: 'github-token'
             }
         }
 
