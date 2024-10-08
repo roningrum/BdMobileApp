@@ -10,6 +10,9 @@ pipeline {
 
         stage('Build') {
             steps {
+                // Berikan izin eksekusi pada file gradlew
+                sh 'chmod +x ./gradlew'
+                // Jalankan proses build
                 sh './gradlew assembleDebug'  // Build APK
             }
         }
