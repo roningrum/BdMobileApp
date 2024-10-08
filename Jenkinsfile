@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        ANDROID_HOME = 'C:/Users/oktav/AppData/Local/Android/Sdk'  // Ganti dengan path SDK Android yang benar
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -14,28 +10,30 @@ pipeline {
 
         stage('Build') {
             steps {
+                // Berikan izin eksekusi pada file gradlew
                 sh 'chmod +x ./gradlew'
-                sh './gradlew assembleDebug'
+                // Jalankan proses build
+                sh './gradlew assembleDebug'  // Build APK
             }
         }
 
         stage('Test') {
             steps {
-                sh './gradlew test'
+                sh './gradlew test'  // Run unit tests
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh 'sonar-scanner'
+                    sh 'sonar-scanner'  // Run SonarQube analysis
                 }
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying APK...'
+                echo 'Deploying APK...'  // Jika ada deployment step
             }
         }
     }
