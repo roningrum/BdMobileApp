@@ -1,54 +1,51 @@
 pipeline {
     agent any
 
-    environment {
-        ANDROID_HOME = 'C:/Users/oktav/AppData/Local/Android/Sdk' // Pastikan ini sesuai dengan path di Jenkins
-        PATH = "${env.ANDROID_HOME}/tools:${env.ANDROID_HOME}/platform-tools:${env.PATH}"
-    }
-
     stages {
-        stage('Checkout') {
+        stage('Clone repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/roningrum/BdMobileApp.git', credentialsId: 'github-token'
+                git branch: 'main', url: 'https://github.com/roningrum/BdMobileApp.git'
             }
         }
 
         stage('Build') {
             steps {
-                // Berikan izin eksekusi pada file gradlew
-                sh 'chmod +x ./gradlew'
-                // Jalankan proses build
-                sh './gradlew assembleDebug'  // Build APK
+                sh './gradlew build'
             }
         }
 
-        stage('Test') {
+        stage('Run Tests') {
             steps {
-                sh './gradlew test'  // Run unit tests
+                sh './gradlew test'
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh 'sonar-scanner'  // Run SonarQube analysis
+                withCredentials([string(credentialsId: 'sonar-token', variable: 'SONARQUBE_TOKEN')]) {
+                    withSonarQubeEnv('SonarQube Server') {
+                        sh './gradlew sonarqube -Dsonar.projectKey=your-project-key -Dsonar.host.url=http://localhost:9000 -Dsonar.login=$SONARQUBE_TOKEN'
+                    }
                 }
             }
         }
 
-        stage('Deploy') {
+        stage('Quality Gate') {
             steps {
-                echo 'Deploying APK...'  // Jika ada deployment step
+                timeout(time: 1, unit: 'HOURS') {
+                    waitForQualityGate abortPipeline: true
+                }
             }
         }
     }
 
     post {
-        success {
-            echo 'Pipeline succeeded'
+        always {
+            archiveArtifacts artifacts: '**/build/libs/*.jar', allowEmptyArchive: true
+            junit '**/build/test-results/test/*.xml'
         }
         failure {
-            echo 'Pipeline failed'
+            echo 'Pipeline failed!'
         }
     }
 }
